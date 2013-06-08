@@ -3,6 +3,7 @@
  * and open the template in the editor.
  */
 package granm;
+import javax.swing.JFrame;
 import javax.swing.UIManager;
 import ventanas.*;
 
@@ -22,7 +23,8 @@ public class GranM {
             //Just print stacktrace here since it's an example.
             ex.printStackTrace();
         }
-        inicio i = new inicio();
-        i.setVisible(true);
+        principal p = new principal();
+        p.setVisible(true);
+        p.setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 }
