@@ -11,12 +11,6 @@ import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.SplashScreen;
 import java.awt.geom.Rectangle2D;
-import java.awt.geom.RoundRectangle2D;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import ventanas.*;
@@ -26,7 +20,7 @@ import ventanas.*;
  * @author brutalchrist
  */
 public class GranM {
-
+    public static boolean splash = false;
     public static SplashScreen loadingScreen;
     public static Rectangle2D.Double loadingTextArea;
     public static Rectangle2D.Double loadingProgressArea;
@@ -58,13 +52,12 @@ public class GranM {
             Dimension dim = loadingScreen.getSize();
             int ht = dim.height;
             int wd = dim.width;
-            //Placing textArea and progressArea
+            
             loadingTextArea = new Rectangle2D.Double(325, ht * 0.7, wd * 0.4, 30);
             loadingProgressArea = new Rectangle2D.Double(325, ht*0.62, 430, 25);
             
             // create the Graphics environment for drawing status info
             loadingGraphics = loadingScreen.createGraphics();
-            //Setting font for text in status info
             myfont = new Font("Times New Roman", Font.BOLD, 18);
             loadingGraphics.setFont(myfont);
 
@@ -74,9 +67,6 @@ public class GranM {
 
     public static void loadingText(String string) {
         if (loadingScreen != null) {
-            //loadingGraphics.setPaint(new Color(0, 0, 0, 0)); 
-            //loadingGraphics.fill(loadingTextArea);
-
             loadingGraphics.setPaint(Color.WHITE); 
             loadingGraphics.drawString(string, (int) loadingTextArea.getX(), (int) loadingTextArea.getY() + 20);
 
@@ -90,7 +80,6 @@ public class GranM {
             loadingGraphics.setPaint(new Color(0, 0, 0, 0));
             loadingGraphics.fill(loadingProgressArea);
             //Color for the border of progressArea
-            //loadingGraphics.setPaint(new Color(17, 106, 250, 100));
             loadingGraphics.setPaint(Color.WHITE);
             loadingGraphics.draw(loadingProgressArea);
 
@@ -108,10 +97,11 @@ public class GranM {
     }
 
     public static void mainMethod() {
-        String[] puntos = {".", "..", "...", "....", "....."};
-        for (int i = 1; i <= 430; i=i+8) {
-            loadingText("Cargando interfaz");
-            loadingProgress(i);
+        if(splash){
+            for (int i = 1; i <= 430; i=i+8) {
+                loadingText("Cargando interfaz");
+                loadingProgress(i);
+            }
         }
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
