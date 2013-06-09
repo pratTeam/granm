@@ -5,11 +5,8 @@
 package ventanas;
 
 import java.awt.GridLayout;
-import java.lang.reflect.Array;
-import java.util.Vector;
-import javax.swing.InputVerifier;
-import javax.swing.JComponent;
-import javax.swing.JFormattedTextField;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
@@ -35,22 +32,36 @@ public class nuevaRestriccion extends javax.swing.JFrame {
     
     public void cargarElementos(int nv){
         JTextField[] restricciones = new JTextField[nv];
-        JComboBox operador;
-        JLabel[] label = new JLabel[nv];
+        JTextField ld = new JTextField();
+        String[] operadodes={"≤","≥","="};
+        JComboBox operador = new JComboBox(operadodes);
         
-        jPanel1.setLayout(new GridLayout(2, nv));
+        jPanel1.setLayout(new GridLayout(2, nv+2));
         
-        for(int i=0; i<nv; i++){
-            label[i] = new JLabel("X"+(i+1));
-            jPanel1.add(label[i]);
-        }
+        for(int i=0; i<nv; i++)
+            jPanel1.add(new JLabel("X"+(i+1)));
+        
+        jPanel1.add(new JLabel("Operador"));
+        jPanel1.add(new JLabel("LD"));
         
         for(int i=0; i<nv; i++){
             restricciones[i] = new JTextField();
+            restricciones[i].addKeyListener(new KeyAdapter(){
+                public void keyTyped(KeyEvent e){
+                    if(((e.getKeyChar() < '0') || (e.getKeyChar() > '9')) && (e.getKeyChar() != '\b') && (e.getKeyChar() != '.'))
+                        e.consume();
+                }
+            });
             jPanel1.add(restricciones[i]);
         }
-        
-        
+        ld.addKeyListener(new KeyAdapter(){
+            public void keyTyped(KeyEvent e){
+                if(((e.getKeyChar() < '0') || (e.getKeyChar() > '9')) && (e.getKeyChar() != '\b') && (e.getKeyChar() != '.'))
+                    e.consume();
+            }
+        });
+        jPanel1.add(operador);
+        jPanel1.add(ld);
     }
 
     /**
@@ -64,19 +75,37 @@ public class nuevaRestriccion extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
+        aceptar = new javax.swing.JButton();
+        cancelar = new javax.swing.JButton();
+
+        setTitle("Nueva restricción");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 524, Short.MAX_VALUE)
+            .addGap(0, 551, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
+            .addGap(0, 142, Short.MAX_VALUE)
         );
 
         jScrollPane1.setViewportView(jPanel1);
+
+        aceptar.setText("Aceptar");
+        aceptar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aceptarActionPerformed(evt);
+            }
+        });
+
+        cancelar.setText("Cancelar");
+        cancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -84,19 +113,41 @@ public class nuevaRestriccion extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 543, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 543, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(cancelar)
+                        .addGap(18, 18, 18)
+                        .addComponent(aceptar)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(46, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(33, 33, 33))
+                .addContainerGap(26, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(aceptar)
+                    .addComponent(cancelar))
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void aceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aceptarActionPerformed
+        /*TODO:
+            - Validar campos llenos
+            - Enviar datos D:*/
+        
+        
+    }//GEN-LAST:event_aceptarActionPerformed
+
+    private void cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarActionPerformed
+        this.setVisible(false);
+    }//GEN-LAST:event_cancelarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -133,6 +184,8 @@ public class nuevaRestriccion extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton aceptar;
+    private javax.swing.JButton cancelar;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables

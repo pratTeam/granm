@@ -4,6 +4,9 @@
  */
 package ventanas;
 
+import java.awt.event.KeyEvent;
+import javax.swing.KeyStroke;
+
 /**
  *
  * @author brutalchrist
@@ -16,6 +19,8 @@ public class nuevo extends javax.swing.JFrame {
      */
     public nuevo() {
         initComponents();
+        nuevaRestriccion.setEnabled(false);
+        FO.getInputMap().put(KeyStroke.getKeyStroke("BACK_SPACE"), "none");
     }
 
     /**
@@ -27,6 +32,7 @@ public class nuevo extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         FO = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         nVariables = new javax.swing.JTextField();
@@ -36,6 +42,11 @@ public class nuevo extends javax.swing.JFrame {
         nuevaRestriccion = new javax.swing.JButton();
         x1 = new javax.swing.JButton();
         borrar = new javax.swing.JButton();
+        aceptar = new javax.swing.JButton();
+        maximizarRadio = new javax.swing.JRadioButton();
+        minimizarRadio = new javax.swing.JRadioButton();
+
+        setTitle("Nuevo");
 
         FO.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -101,13 +112,30 @@ public class nuevo extends javax.swing.JFrame {
             }
         });
 
+        aceptar.setText("Comenzar");
+
+        buttonGroup1.add(maximizarRadio);
+        maximizarRadio.setSelected(true);
+        maximizarRadio.setText("Maximizar");
+
+        buttonGroup1.add(minimizarRadio);
+        minimizarRadio.setText("Minimizar");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(aceptar)
+                .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(maximizarRadio)
+                        .addGap(18, 18, 18)
+                        .addComponent(minimizarRadio))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -130,7 +158,11 @@ public class nuevo extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(45, 45, 45)
+                .addGap(23, 23, 23)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(maximizarRadio)
+                    .addComponent(minimizarRadio))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(FO, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -140,20 +172,21 @@ public class nuevo extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(nVariables, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
-                .addGap(46, 46, 46)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(nuevaRestriccion, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addContainerGap(38, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addComponent(aceptar)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void FOKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_FOKeyTyped
-        //TODO: Falta eliminar Backspace
         if(!operadorFlag){
-            if(Character.isDigit(evt.getKeyChar())){ 
+            if(Character.isDigit(evt.getKeyChar()) || evt.getKeyChar() == '.'){ 
             }
             else{
                 evt.consume();
@@ -187,14 +220,17 @@ public class nuevo extends javax.swing.JFrame {
             operadorFlag = true;
             nVariables.setText(String.valueOf(contX-1));
         }
+        nuevaRestriccion.setEnabled(true);
         FO.requestFocus();
     }//GEN-LAST:event_x1ActionPerformed
 
     private void borrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrarActionPerformed
         FO.setText("");
         contX=1;
+        operadorFlag = false;
         x1.setText("X"+contX);
         nVariables.setText(String.valueOf(contX-1));
+        nuevaRestriccion.setEnabled(false);
         FO.requestFocus();
     }//GEN-LAST:event_borrarActionPerformed
 
@@ -234,11 +270,15 @@ public class nuevo extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField FO;
+    private javax.swing.JButton aceptar;
     private javax.swing.JButton borrar;
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JRadioButton maximizarRadio;
+    private javax.swing.JRadioButton minimizarRadio;
     private javax.swing.JTextField nVariables;
     private javax.swing.JButton nuevaRestriccion;
     private javax.swing.JButton x1;
