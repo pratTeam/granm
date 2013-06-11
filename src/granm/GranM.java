@@ -20,7 +20,8 @@ import ventanas.*;
  * @author brutalchrist
  */
 public class GranM {
-    public static boolean splash = true;
+    //agregar otra ,ifjdsf
+    public static boolean splash = false;
     public static SplashScreen loadingScreen;
     public static Rectangle2D.Double loadingTextArea;
     public static Rectangle2D.Double loadingProgressArea;
