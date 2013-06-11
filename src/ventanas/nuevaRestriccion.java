@@ -16,7 +16,11 @@ import javax.swing.JComboBox;
  * @author brutalchrist
  */
 public class nuevaRestriccion extends javax.swing.JFrame {
-
+    public boolean completo = false;
+    public JTextField[] restricciones;
+    public JTextField ld;
+    public JComboBox operador;
+    
     /**
      * Creates new form nuevaRestriccion
      */
@@ -31,10 +35,11 @@ public class nuevaRestriccion extends javax.swing.JFrame {
     }
     
     public void cargarElementos(int nv){
-        JTextField[] restricciones = new JTextField[nv];
-        JTextField ld = new JTextField();
-        String[] operadodes={"≤","≥","="};
-        JComboBox operador = new JComboBox(operadodes);
+        String[] operadodes = {"≤", "≥", "="};
+        
+        restricciones = new JTextField[nv];
+        ld = new JTextField();
+        operador = new JComboBox(operadodes);
         
         jPanel1.setLayout(new GridLayout(2, nv+2));
         
@@ -48,7 +53,7 @@ public class nuevaRestriccion extends javax.swing.JFrame {
             restricciones[i] = new JTextField();
             restricciones[i].addKeyListener(new KeyAdapter(){
                 public void keyTyped(KeyEvent e){
-                    if(((e.getKeyChar() < '0') || (e.getKeyChar() > '9')) && (e.getKeyChar() != '\b') && (e.getKeyChar() != '.'))
+                    if(((e.getKeyChar() < '0') || (e.getKeyChar() > '9')) && (e.getKeyChar() != '\b') && (e.getKeyChar() != '.') && (e.getKeyChar() != '-'))
                         e.consume();
                 }
             });
@@ -56,7 +61,7 @@ public class nuevaRestriccion extends javax.swing.JFrame {
         }
         ld.addKeyListener(new KeyAdapter(){
             public void keyTyped(KeyEvent e){
-                if(((e.getKeyChar() < '0') || (e.getKeyChar() > '9')) && (e.getKeyChar() != '\b') && (e.getKeyChar() != '.'))
+                if(((e.getKeyChar() < '0') || (e.getKeyChar() > '9')) && (e.getKeyChar() != '\b') && (e.getKeyChar() != '.') && (e.getKeyChar() != '.'))
                     e.consume();
             }
         });
@@ -137,12 +142,38 @@ public class nuevaRestriccion extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public boolean isComplete(){
+        return completo;
+    }
+    
+    public double[] getRestriccion(){
+        double[] restriccion = new double[restricciones.length];
+        
+        for(int i=0; i < restricciones.length; i++){
+            restriccion[i] = Double.parseDouble(restricciones[i].getText().toString());
+        }
+        
+        return restriccion;
+    }
+    
+    public int getOperador(){
+        return operador.getSelectedIndex();
+    }
+    
+    public String getOperadorString(){
+        return (String) operador.getSelectedItem();
+    }
+    
+    public double getLd(){
+        return Double.parseDouble(ld.getText().toString());
+    }
+    
     private void aceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aceptarActionPerformed
         /*TODO:
             - Validar campos llenos
-            - Enviar datos D:*/
-        
-        
+            - Enviar datos D: */
+        completo = true;
+        this.setVisible(false);
     }//GEN-LAST:event_aceptarActionPerformed
 
     private void cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarActionPerformed

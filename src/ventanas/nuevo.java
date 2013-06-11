@@ -5,7 +5,9 @@
 package ventanas;
 
 import java.awt.event.KeyEvent;
+import java.util.Vector;
 import javax.swing.KeyStroke;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -14,6 +16,7 @@ import javax.swing.KeyStroke;
 public class nuevo extends javax.swing.JFrame {
     int contX = 1;
     boolean operadorFlag = false;
+    nuevaRestriccion n;
     /**
      * Creates new form inicio
      */
@@ -38,15 +41,20 @@ public class nuevo extends javax.swing.JFrame {
         nVariables = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tablaRestricciones = new javax.swing.JTable();
         nuevaRestriccion = new javax.swing.JButton();
-        x1 = new javax.swing.JButton();
+        xi = new javax.swing.JButton();
         borrar = new javax.swing.JButton();
         aceptar = new javax.swing.JButton();
         maximizarRadio = new javax.swing.JRadioButton();
         minimizarRadio = new javax.swing.JRadioButton();
 
         setTitle("Nuevo");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowActivated(java.awt.event.WindowEvent evt) {
+                formWindowActivated(evt);
+            }
+        });
 
         FO.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -66,7 +74,7 @@ public class nuevo extends javax.swing.JFrame {
 
         jLabel3.setText("N° V");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tablaRestricciones.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -89,7 +97,7 @@ public class nuevo extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tablaRestricciones);
 
         nuevaRestriccion.setText("+");
         nuevaRestriccion.addActionListener(new java.awt.event.ActionListener() {
@@ -98,10 +106,10 @@ public class nuevo extends javax.swing.JFrame {
             }
         });
 
-        x1.setText("X1");
-        x1.addActionListener(new java.awt.event.ActionListener() {
+        xi.setText("X1");
+        xi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                x1ActionPerformed(evt);
+                xiActionPerformed(evt);
             }
         });
 
@@ -145,7 +153,7 @@ public class nuevo extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(FO, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(x1)
+                                .addComponent(xi)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(borrar))
                             .addComponent(nVariables, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -166,7 +174,7 @@ public class nuevo extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(FO, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(x1)
+                    .addComponent(xi)
                     .addComponent(borrar))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -204,35 +212,74 @@ public class nuevo extends javax.swing.JFrame {
     }//GEN-LAST:event_FOKeyTyped
 
     private void nuevaRestriccionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nuevaRestriccionActionPerformed
-        nuevaRestriccion n = new nuevaRestriccion(contX-1);
+        n = new nuevaRestriccion(contX-1);
         n.setVisible(true);
+        
+        if(n.isComplete()){
+            System.out.println("ASDFASDFASDF");
+        }
+            
     }//GEN-LAST:event_nuevaRestriccionActionPerformed
 
     private void nVariablesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nVariablesActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_nVariablesActionPerformed
 
-    private void x1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_x1ActionPerformed
+    private void xiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_xiActionPerformed
         if(!operadorFlag){
             FO.setText(FO.getText()+"X"+contX);
             contX++;
-            x1.setText("X"+contX);
+            xi.setText("X"+contX);
             operadorFlag = true;
             nVariables.setText(String.valueOf(contX-1));
         }
         nuevaRestriccion.setEnabled(true);
         FO.requestFocus();
-    }//GEN-LAST:event_x1ActionPerformed
+    }//GEN-LAST:event_xiActionPerformed
 
     private void borrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrarActionPerformed
         FO.setText("");
         contX=1;
         operadorFlag = false;
-        x1.setText("X"+contX);
+        xi.setText("X"+contX);
         nVariables.setText(String.valueOf(contX-1));
         nuevaRestriccion.setEnabled(false);
         FO.requestFocus();
     }//GEN-LAST:event_borrarActionPerformed
+
+    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
+        if(n != null){
+            if(n.isComplete()){
+                String rest = "";
+                DefaultTableModel modelo = new DefaultTableModel();
+                
+                FO.setEnabled(false);
+                xi.setEnabled(false);
+                borrar.setEnabled(false);
+                
+                modelo = (DefaultTableModel) tablaRestricciones.getModel();
+                
+                for(int i=0; i<n.getRestriccion().length; i++){
+                    if(i == 0){
+                        rest = n.getRestriccion()[i] + "x" + (i+1);
+                    }
+                    else{
+                        if(n.getRestriccion()[i] >= 0){
+                            rest = rest + "+" + n.getRestriccion()[i] + "x" + (i+1);
+                        }
+                        else{
+                            rest = rest + n.getRestriccion()[i] + "x" + (i+1);
+                        }
+                    }
+                }
+                
+                String[] fila = {rest, n.getOperadorString(), String.valueOf(n.getLd())};
+                modelo.addRow(fila);
+                
+                tablaRestricciones.setModel(modelo);
+            }
+        }
+    }//GEN-LAST:event_formWindowActivated
 
     /**
      * @param args the command line arguments
@@ -276,11 +323,11 @@ public class nuevo extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JRadioButton maximizarRadio;
     private javax.swing.JRadioButton minimizarRadio;
     private javax.swing.JTextField nVariables;
     private javax.swing.JButton nuevaRestriccion;
-    private javax.swing.JButton x1;
+    private javax.swing.JTable tablaRestricciones;
+    private javax.swing.JButton xi;
     // End of variables declaration//GEN-END:variables
 }
