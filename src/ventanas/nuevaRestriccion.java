@@ -171,7 +171,7 @@ public class nuevaRestriccion extends javax.swing.JFrame {
     private void aceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aceptarActionPerformed
         /*TODO:
             - Validar campos llenos
-            - Enviar datos D: */
+            */
         completo = true;
         this.setVisible(false);
     }//GEN-LAST:event_aceptarActionPerformed

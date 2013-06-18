@@ -11,13 +11,26 @@
 package ventanas;
 
 import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.List;
 import java.awt.Toolkit;
+import java.util.ArrayList;
+import java.util.Iterator;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author TCA_LC417_PC01
  */
 public class principal extends javax.swing.JFrame {
+    public nuevo n;
+    public boolean maximizar = false;
+    public boolean primeroFlag = true;
+    public String FO = null;
+    public int numVar = 0;
+    public String[] restricciones = null;
+    public String[] operadores= null;
+    public String[] ld = null;
 
     /** Creates new form principal */
     public principal() {
@@ -37,8 +50,7 @@ public class principal extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        panelTabla = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -46,6 +58,13 @@ public class principal extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Awesome Business Software");
+        addWindowFocusListener(new java.awt.event.WindowFocusListener() {
+            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
+                formWindowGainedFocus(evt);
+            }
+            public void windowLostFocus(java.awt.event.WindowEvent evt) {
+            }
+        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -73,18 +92,16 @@ public class principal extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"0", "1", null, null, null, null, null, null, null},
-                {"1", "0", null, null, null, null, null, null, null},
-                {"2", "0", null, null, null, null, null, null, null},
-                {"3", "0", null, null, null, null, null, null, null}
-            },
-            new String [] {
-                "R", "Z", "X1", "X2", "S1", "e2", "a2", "a3", "LD"
-            }
-        ));
-        jScrollPane2.setViewportView(jTable2);
+        javax.swing.GroupLayout panelTablaLayout = new javax.swing.GroupLayout(panelTabla);
+        panelTabla.setLayout(panelTablaLayout);
+        panelTablaLayout.setHorizontalGroup(
+            panelTablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        panelTablaLayout.setVerticalGroup(
+            panelTablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 270, Short.MAX_VALUE)
+        );
 
         jMenu1.setText("Archivo");
 
@@ -109,9 +126,9 @@ public class principal extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2)
+                .addComponent(panelTabla, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -119,23 +136,109 @@ public class principal extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(224, Short.MAX_VALUE))
+                .addComponent(panelTabla, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(46, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
 private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-   abrirNuevo();
+    abrirNuevo();
 }//GEN-LAST:event_jButton1ActionPerformed
 
 private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
     abrirNuevo();
 }//GEN-LAST:event_jMenuItem1ActionPerformed
 
+    private void formWindowGainedFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowGainedFocus
+        if (n != null && primeroFlag) {
+            if(n.isComplete()){
+                maximizar = n.isMax();
+                FO = n.getFO();
+                numVar = n.getNumVariables();
+                restricciones = n.getRestricciones();
+                operadores = n.getOperadores();
+                ld = n.getLds();
+                
+                primeroFlag = false;
+                ArrayList<Integer> A = new ArrayList<Integer>();
+                
+                A = igualarRestricciones();
+                modificarFO(A);
+                restriccionesPorM(A);
+                
+                
+                String m = "FO: "+FO+"\nS/A:\n";
+                for(int i=0; i<restricciones.length; i++){
+                    m = m + restricciones[i]+" = "+ld[i]+"\n";
+                }
+                JOptionPane.showMessageDialog(this, m);
+                //cargarTabla();
+            }
+        }
+    }//GEN-LAST:event_formWindowGainedFocus
+
+    public ArrayList<Integer> igualarRestricciones(){
+        ArrayList<Integer> enviar = new ArrayList<Integer>();
+        
+        for(int i=0; i<operadores.length; i++){
+            switch(operadores[i]){
+                case "≤":
+                    restricciones[i] = restricciones[i]+"+S"+(i+1);
+                    break;
+                case "≥":
+                    restricciones[i] = restricciones[i]+"-e"+(i+1)+"+A"+(i+1);
+                    enviar.add((i+1));
+                    break;
+                case "=":
+                    restricciones[i] = restricciones[i]+"+A"+(i+1);
+                    enviar.add((i+1));
+                    break;
+                default:
+                    break;
+            }
+        }
+        
+        return enviar;
+    }
+    
+    public void modificarFO(ArrayList<Integer> A){
+        Iterator iter = A.iterator();
+        while (iter.hasNext())
+            FO = FO+"+MA"+iter.next();
+    }
+    
+    public void restriccionesPorM(ArrayList<Integer> A){
+        String nuevo;
+        int aux;
+        
+        Iterator iter = A.iterator();
+        while (iter.hasNext()){
+            nuevo = "";
+            aux = Integer.valueOf(iter.next().toString())-1;
+            
+            for(int i=0; i < restricciones[aux].length(); i++){
+                if(restricciones[aux].charAt(i) == 'x' || restricciones[aux].charAt(i) == 'A' ||
+                        restricciones[aux].charAt(i) == 'e'){
+                    nuevo = nuevo + "M" + restricciones[aux].charAt(i);
+                }
+                else{
+                    nuevo = nuevo + restricciones[aux].charAt(i);
+                }            
+            }
+            restricciones[aux] = nuevo;
+            ld[aux] = ld[aux]+"M";
+        }
+    }
+    
+    private void cargarTabla(){
+        panelTabla.setLayout(new GridLayout(restricciones.length+2, 5));
+    }
+    
 public void abrirNuevo(){
-    nuevo n = new nuevo();
+    primeroFlag = true;
+    n = new nuevo();
     n.setVisible(true);
 }
     /**
@@ -180,7 +283,6 @@ public void abrirNuevo(){
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable2;
+    private javax.swing.JPanel panelTabla;
     // End of variables declaration//GEN-END:variables
 }
