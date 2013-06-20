@@ -10,13 +10,17 @@
  */
 package ventanas;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.List;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Iterator;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 
 /**
  *
@@ -28,15 +32,21 @@ public class principal extends javax.swing.JFrame {
     public boolean primeroFlag = true;
     public String FO = null;
     public int numVar = 0;
+    public int numColumnas = 0;
     public String[] restricciones = null;
     public String[] operadores= null;
     public String[] ld = null;
+    public ArrayList<Integer> Ss = new ArrayList<Integer>();
+    public ArrayList<Integer> As = new ArrayList<Integer>();
+    public ArrayList<Integer> es = new ArrayList<Integer>();
 
     /** Creates new form principal */
     public principal() {
         //Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         initComponents();
-        //setBounds(0,0,screenSize.width, screenSize.height);
+        //setBounds(((screenSize.width/2)-(this.getSize().width/2)), ((screenSize.height/2)-(this.getSize().height/2))-20,
+        //        this.getSize().width, this.getSize().height);
+        setLocationRelativeTo(null);
     }
 
     /** This method is called from within the constructor to
@@ -50,7 +60,10 @@ public class principal extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
-        panelTabla = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        panelMatris = new javax.swing.JPanel();
+        btnFinalizar = new javax.swing.JButton();
+        btnSiguiente = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -58,6 +71,7 @@ public class principal extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Awesome Business Software");
+        setPreferredSize(new java.awt.Dimension(1000, 580));
         addWindowFocusListener(new java.awt.event.WindowFocusListener() {
             public void windowGainedFocus(java.awt.event.WindowEvent evt) {
                 formWindowGainedFocus(evt);
@@ -82,7 +96,7 @@ public class principal extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(658, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -92,16 +106,22 @@ public class principal extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        javax.swing.GroupLayout panelTablaLayout = new javax.swing.GroupLayout(panelTabla);
-        panelTabla.setLayout(panelTablaLayout);
-        panelTablaLayout.setHorizontalGroup(
-            panelTablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+        javax.swing.GroupLayout panelMatrisLayout = new javax.swing.GroupLayout(panelMatris);
+        panelMatris.setLayout(panelMatrisLayout);
+        panelMatrisLayout.setHorizontalGroup(
+            panelMatrisLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 725, Short.MAX_VALUE)
         );
-        panelTablaLayout.setVerticalGroup(
-            panelTablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 270, Short.MAX_VALUE)
+        panelMatrisLayout.setVerticalGroup(
+            panelMatrisLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 303, Short.MAX_VALUE)
         );
+
+        jScrollPane1.setViewportView(panelMatris);
+
+        btnFinalizar.setText("Finalizar");
+
+        btnSiguiente.setText("Siguiente paso");
 
         jMenu1.setText("Archivo");
 
@@ -116,7 +136,7 @@ public class principal extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Edit");
+        jMenu2.setText("Ayuda");
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -126,9 +146,15 @@ public class principal extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panelTabla, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnSiguiente)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnFinalizar)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -136,8 +162,12 @@ public class principal extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(panelTabla, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(46, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnFinalizar)
+                    .addComponent(btnSiguiente))
+                .addContainerGap())
         );
 
         pack();
@@ -168,13 +198,12 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
                 modificarFO(A);
                 restriccionesPorM(A);
                 
-                
                 String m = "FO: "+FO+"\nS/A:\n";
                 for(int i=0; i<restricciones.length; i++){
                     m = m + restricciones[i]+" = "+ld[i]+"\n";
-                }
-                JOptionPane.showMessageDialog(this, m);
-                //cargarTabla();
+                }                
+                cargarTabla();
+                //JOptionPane.showMessageDialog(this, m);
             }
         }
     }//GEN-LAST:event_formWindowGainedFocus
@@ -186,13 +215,23 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
             switch(operadores[i]){
                 case "≤":
                     restricciones[i] = restricciones[i]+"+S"+(i+1);
+                    Ss.add(i+1);
+                    if(numColumnas < (numVar+1))
+                        numColumnas = (numVar+1);
                     break;
                 case "≥":
                     restricciones[i] = restricciones[i]+"-e"+(i+1)+"+A"+(i+1);
+                    es.add(i+1);
+                    As.add(i+1);
+                    if(numColumnas < (numVar+2))
+                        numColumnas = (numVar+2);
                     enviar.add((i+1));
                     break;
                 case "=":
                     restricciones[i] = restricciones[i]+"+A"+(i+1);
+                    As.add(i+1);
+                    if(numColumnas < (numVar+1))
+                        numColumnas = (numVar+1);
                     enviar.add((i+1));
                     break;
                 default:
@@ -233,7 +272,100 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     }
     
     private void cargarTabla(){
-        panelTabla.setLayout(new GridLayout(restricciones.length+2, 5));
+        int numFilas = restricciones.length+2;
+        int numCols = getNumColumnas();
+        int contLabel= 0;
+        
+        JLabel[] label = new JLabel[numCols];
+        
+        for(int i=0; i<numCols; i++){
+            label[i] = new JLabel("");
+            label[i].setFont(new Font("", Font.BOLD, 14));
+        }
+        
+        panelMatris.setLayout(new GridLayout(numFilas, numCols));
+        
+        label[0].setText("R");
+        contLabel++;
+        panelMatris.add(label[0]);
+        label[1].setText("V");
+        contLabel++;
+        panelMatris.add(label[1]);
+        label[2].setText("Z");
+        contLabel++;
+        panelMatris.add(label[2]);
+        
+        for(int i=0; i<numVar; i++){
+            label[i+3].setText("X"+(i+1));
+            panelMatris.add(label[i+3]);
+            contLabel++;
+        }
+        
+        Iterator iter = As.iterator();
+        while (iter.hasNext()){
+            label[contLabel].setText("A"+iter.next());
+            panelMatris.add(label[contLabel]);
+            contLabel++;
+        }
+        
+        iter = es.iterator();
+        while (iter.hasNext()){
+            label[contLabel].setText("e"+iter.next());
+            panelMatris.add(label[contLabel]);
+            contLabel++;
+        }
+        
+        iter = Ss.iterator();
+        while (iter.hasNext()){
+            label[contLabel].setText("S"+iter.next());
+            panelMatris.add(label[contLabel]);
+            contLabel++;
+        }
+        
+        label[contLabel].setText("LD");
+        panelMatris.add(label[contLabel]);
+        
+        panelMatris.updateUI();
+
+        for (int i=0; i<(numFilas-1); i++){
+            for(int k=0; k<numCols; k++){
+                panelMatris.add(new JTextArea(String.valueOf(i)));
+            }
+        }
+        /*
+         Crear la matriz con datos, M = 10000000
+         */
+        
+        System.out.println("numCols: " + numCols);
+        System.out.println("numFilas: " + numFilas);
+    }
+    
+    private int getNumColumnas(){
+        int enviar = 0;
+        
+        Iterator iter = As.iterator();
+        while (iter.hasNext()){
+            iter.next();
+            enviar++;
+        }
+        
+        iter = es.iterator();
+        while (iter.hasNext()){
+            iter.next();
+            enviar++;
+        }
+        
+        iter = Ss.iterator();
+        while (iter.hasNext()){
+            iter.next();
+            enviar++;
+        }
+        enviar = enviar + numVar;
+        
+        //R, V, Z, ld
+        enviar = enviar + 4;
+        
+        return enviar;
     }
     
 public void abrirNuevo(){
@@ -277,12 +409,15 @@ public void abrirNuevo(){
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnFinalizar;
+    private javax.swing.JButton btnSiguiente;
     private javax.swing.JButton jButton1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel panelTabla;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel panelMatris;
     // End of variables declaration//GEN-END:variables
 }

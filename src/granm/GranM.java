@@ -107,7 +107,7 @@ public class GranM {
             public void run() {
                 principal p = new principal();
                 p.setVisible(true);
-                p.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                //p.setExtendedState(JFrame.MAXIMIZED_BOTH);
             }
         });
     }

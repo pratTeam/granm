@@ -26,6 +26,8 @@ public class nuevo extends javax.swing.JFrame {
         initComponents();
         nuevaRestriccion.setEnabled(false);
         FO.getInputMap().put(KeyStroke.getKeyStroke("BACK_SPACE"), "none");
+        FO.requestFocus();
+        setLocationRelativeTo(null);
     }
 
     /**

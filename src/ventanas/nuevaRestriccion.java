@@ -27,6 +27,7 @@ public class nuevaRestriccion extends javax.swing.JFrame {
     public nuevaRestriccion(int nv) {
         int nVariables = nv;
         initComponents();
+        setLocationRelativeTo(null);
         cargarElementos(nv);
     }
 
@@ -122,9 +123,9 @@ public class nuevaRestriccion extends javax.swing.JFrame {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 543, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(cancelar)
+                        .addComponent(aceptar)
                         .addGap(18, 18, 18)
-                        .addComponent(aceptar)))
+                        .addComponent(cancelar)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
