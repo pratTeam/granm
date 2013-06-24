@@ -5,9 +5,12 @@
 package ventanas;
 
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Vector;
 import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableModel;
+import static ventanas.principal.FOString;
 
 /**
  *
@@ -17,6 +20,9 @@ public class nuevo extends javax.swing.JFrame {
     private int contX = 1;
     private boolean operadorFlag = false;
     public boolean completo = false;
+    public String FOString = new String();
+    public ArrayList<Double> FODouble = new ArrayList<Double>();
+    public ArrayList<Double[]> RestriccionesDouble = new ArrayList<Double[]>();
     
     nuevaRestriccion n;
     /**
@@ -48,8 +54,18 @@ public class nuevo extends javax.swing.JFrame {
         return enviar;
     }
     
-    public String getFO(){
+    public String getFOString(){
         return FO.getText().toString();
+    }
+    
+    public Double[] getFoDouble(){
+        Double [] enviar = FODouble.toArray(new Double[FODouble.size()]);
+        
+        return enviar;
+    }
+    
+    public ArrayList<Double> getFOList(){
+        return FODouble;
     }
     
     public int getNumVariables(){
@@ -66,6 +82,10 @@ public class nuevo extends javax.swing.JFrame {
         }
         
         return enviar;
+    }
+    
+    public ArrayList<Double[]> getRestriccionesDouble(){
+        return RestriccionesDouble;
     }
     
     public String[] getOperadores(){
@@ -85,6 +105,17 @@ public class nuevo extends javax.swing.JFrame {
         
         for(int i=0; i<modelo.getRowCount(); i++)
             enviar[i] = modelo.getValueAt(i, 2).toString();
+        
+        return enviar;
+    }
+    
+    public Double[] getLdsDouble(){
+        DefaultTableModel modelo = (DefaultTableModel) tablaRestricciones.getModel();
+        Double[] enviar = new Double[modelo.getRowCount()];
+        
+        
+        for(int i=0; i<modelo.getRowCount(); i++)
+            enviar[i] = Double.parseDouble(modelo.getValueAt(i, 2).toString());
         
         return enviar;
     }
@@ -185,10 +216,10 @@ public class nuevo extends javax.swing.JFrame {
         });
 
         buttonGroup1.add(maximizarRadio);
-        maximizarRadio.setSelected(true);
         maximizarRadio.setText("Maximizar");
 
         buttonGroup1.add(minimizarRadio);
+        minimizarRadio.setSelected(true);
         minimizarRadio.setText("Minimizar");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -257,6 +288,7 @@ public class nuevo extends javax.swing.JFrame {
     private void FOKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_FOKeyTyped
         if(!operadorFlag){
             if(Character.isDigit(evt.getKeyChar()) || evt.getKeyChar() == '.'){ 
+                FOString = FOString+evt.getKeyChar();
             }
             else{
                 evt.consume();
@@ -266,6 +298,7 @@ public class nuevo extends javax.swing.JFrame {
         else{
             if(evt.getKeyChar() == '+' || evt.getKeyChar() == '-'){ 
                 operadorFlag = false;
+                FOString = FOString+evt.getKeyChar();
             }
             else{
                 evt.consume();
@@ -284,6 +317,8 @@ public class nuevo extends javax.swing.JFrame {
 
     private void xiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_xiActionPerformed
         if(!operadorFlag){
+            FODouble.add(Double.parseDouble(FOString));
+            FOString = "";
             FO.setText(FO.getText()+"x"+contX);
             contX++;
             xi.setText("X"+contX);
@@ -295,6 +330,8 @@ public class nuevo extends javax.swing.JFrame {
     }//GEN-LAST:event_xiActionPerformed
 
     private void borrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrarActionPerformed
+        FODouble.clear();
+        FOString = "";
         FO.setText("");
         contX=1;
         operadorFlag = false;
@@ -332,6 +369,8 @@ public class nuevo extends javax.swing.JFrame {
                 
                 String[] fila = {rest, n.getOperadorString(), String.valueOf(n.getLd())};
                 modelo.addRow(fila);
+                
+                RestriccionesDouble.add(n.getRestriccion());
                 
                 tablaRestricciones.setModel(modelo);
             }

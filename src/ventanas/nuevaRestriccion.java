@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -147,8 +148,8 @@ public class nuevaRestriccion extends javax.swing.JFrame {
         return completo;
     }
     
-    public double[] getRestriccion(){
-        double[] restriccion = new double[restricciones.length];
+    public Double[] getRestriccion(){
+        Double[] restriccion = new Double[restricciones.length];
         
         for(int i=0; i < restricciones.length; i++){
             restriccion[i] = Double.parseDouble(restricciones[i].getText().toString());
@@ -170,11 +171,19 @@ public class nuevaRestriccion extends javax.swing.JFrame {
     }
     
     private void aceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aceptarActionPerformed
-        /*TODO:
-            - Validar campos llenos
-            */
-        completo = true;
-        this.setVisible(false);
+        boolean vacio = false;
+        
+        for(int i=0; i<restricciones.length; i++){
+            if(restricciones[i].getText().isEmpty() || ld.getText().isEmpty()){
+                vacio = true;
+                JOptionPane.showMessageDialog(this, "Todos los campos deben estar llenos.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        
+        if(!vacio){
+            completo = true;
+            this.setVisible(false);
+        }
     }//GEN-LAST:event_aceptarActionPerformed
 
     private void cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarActionPerformed
