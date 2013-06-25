@@ -16,3 +16,4 @@
 *.war
 *.ear
 /nbproject/private/
+/dist/

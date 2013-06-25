@@ -10,19 +10,38 @@
  */
 package ventanas;
 
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridLayout;
-import java.awt.List;
-import java.awt.Toolkit;
+import java.awt.Robot;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import javax.swing.BorderFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
+import javax.swing.SwingConstants;
+import sun.org.mozilla.javascript.internal.ast.ContinueStatement;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 /**
  *
@@ -32,8 +51,10 @@ public class principal extends javax.swing.JFrame {
 
     public static nuevo n;
     public static boolean primeroFlag = true;
+    public static boolean pasoAPaso = true;
     public static int numVar = 0;
     public static int numColumnas = 0;
+    public static int vueltas = 0;
     public static String FOString = null;
     public static String[] restriccionesString = null;
     public static String[] operadores = null;
@@ -49,12 +70,19 @@ public class principal extends javax.swing.JFrame {
     public static ArrayList<Integer> As = new ArrayList<Integer>();
     public static ArrayList<Integer> es = new ArrayList<Integer>();
     public static Double[][] matriz = null;
+    public static Double[][] matrizTrabajo = null;
+    public static String[][] rvz = null;
+    public static JLabel[] labelMatriz = null;
+    public static JTextPane[][] txtMatriz = null;
+    public static JTextPane[][] txtRvz = null;
+    public static Document documento = new Document();
 
     /**
      * Creates new form principal
      */
     public principal() {
         initComponents();
+        pbProgreso.setVisible(false);
         setLocationRelativeTo(null);
     }
 
@@ -70,6 +98,8 @@ public class principal extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         pbProgreso = new javax.swing.JProgressBar();
+        toPng = new javax.swing.JButton();
+        btnPDF = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         panelMatris = new javax.swing.JPanel();
         btnFinalizar = new javax.swing.JButton();
@@ -77,10 +107,13 @@ public class principal extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem2 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        jMenuItem3 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Awesome Business Software");
+        setTitle("Método Gran M");
         setPreferredSize(new java.awt.Dimension(1000, 580));
         addWindowFocusListener(new java.awt.event.WindowFocusListener() {
             public void windowGainedFocus(java.awt.event.WindowEvent evt) {
@@ -92,10 +125,26 @@ public class principal extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jButton1.setText("Nuevo");
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/nuevo.png"))); // NOI18N
+        jButton1.setToolTipText("Nuevo");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
+            }
+        });
+
+        toPng.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/export.png"))); // NOI18N
+        toPng.setToolTipText("Exportar imagen");
+        toPng.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toPngActionPerformed(evt);
+            }
+        });
+
+        btnPDF.setText("PDF");
+        btnPDF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPDFActionPerformed(evt);
             }
         });
 
@@ -106,19 +155,27 @@ public class principal extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 483, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(toPng, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnPDF)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 321, Short.MAX_VALUE)
                 .addComponent(pbProgreso, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(toPng, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(pbProgreso, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnPDF)
+                    .addComponent(pbProgreso, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(25, 25, 25))
         );
 
@@ -139,9 +196,19 @@ public class principal extends javax.swing.JFrame {
 
         btnFinalizar.setText("Finalizar");
         btnFinalizar.setEnabled(false);
+        btnFinalizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFinalizarActionPerformed(evt);
+            }
+        });
 
         btnSiguiente.setText("Siguiente paso");
         btnSiguiente.setEnabled(false);
+        btnSiguiente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSiguienteActionPerformed(evt);
+            }
+        });
 
         jMenu1.setText("Archivo");
 
@@ -153,10 +220,24 @@ public class principal extends javax.swing.JFrame {
             }
         });
         jMenu1.add(jMenuItem1);
+        jMenu1.add(jSeparator1);
+
+        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem2.setText("Salir");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem2);
 
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Ayuda");
+
+        jMenuItem3.setText("Acerca de");
+        jMenu2.add(jMenuItem3);
+
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -182,7 +263,7 @@ public class principal extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnFinalizar)
@@ -204,6 +285,31 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     private void formWindowGainedFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowGainedFocus
         if (n != null && primeroFlag) {
             if (n.isComplete()) {
+                //Inicializando variables
+                primeroFlag = true;
+                numVar = 0;
+                numColumnas = 0;
+                FOString = null;
+                restriccionesString = null;
+                operadores = null;
+                ldString = null;
+                FODouble = null;
+                ldDouble = null;
+                ldDoubleM = null;
+                restriccionesDouble = new ArrayList<Double[]>();
+                restriccionesDoubleM = new ArrayList<Double[]>();
+                FOList = new ArrayList<Double>();
+                Ss = new ArrayList<Integer>();
+                As = new ArrayList<Integer>();
+                es = new ArrayList<Integer>();
+                matriz = null;
+                matrizTrabajo = null;
+                rvz = null;
+                labelMatriz = null;
+                txtMatriz = null;
+                txtRvz = null;
+                documento = new Document();
+
                 FOString = n.getFOString();
                 FODouble = n.getFoDouble();
                 FOList = n.getFOList();
@@ -217,17 +323,332 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
 
                 primeroFlag = false;
 
+                pbProgreso.setVisible(true);
+                btnPDF.setVisible(false);
+
+                btnFinalizar.setEnabled(true);
+                btnSiguiente.setEnabled(true);
+
                 igualarRestricciones();
-                FOporM();
+                //FOporM();
                 restriccionesPorM();
                 generarNuevaFO();
                 cargarMatriz();
 
                 new Thread(new hilo()).start();
-                //JOptionPane.showMessageDialog(this, m);
             }
         }
     }//GEN-LAST:event_formWindowGainedFocus
+
+    public boolean ciclo() {
+        boolean fin = true;
+        int piboteX = 0, piboteY = 0;
+        Double menor = 1000.0, pibote = 0.0;
+        matrizTrabajo = new Double[matriz.length][matriz[0].length];
+
+        for (int i = 0; i < matrizTrabajo.length; i++) {
+            for (int j = 0; j < matrizTrabajo[i].length; j++) {
+                matrizTrabajo[i][j] = 0.0;
+            }
+        }
+
+        //buscar pibote
+        if (n.isMax()) {
+            //se selecciona el más negativo
+            piboteX = buscaNegativo();
+        } else {
+            //se selecciona el más positivo
+            piboteX = buscaPositivo();
+        }
+
+        for (int i = 1; i < matriz.length; i++) {
+            if ((matriz[i][matriz[i].length - 1] / matriz[i][piboteX]) > 0) {
+                if ((matriz[i][matriz[i].length - 1] / matriz[i][piboteX]) < menor) {
+                    menor = matriz[i][matriz[i].length - 1] / matriz[i][piboteX];
+                    piboteY = i;
+                }
+            }
+        }
+
+        pibote = matriz[piboteY][piboteX];
+        
+        mostrarMatriz(matriz);
+        System.out.println("######");
+
+        //Multiplicamos por 1/pibote la fila del pibote
+        for (int i = 0; i < matriz[piboteY].length; i++) {
+            matrizTrabajo[piboteY][i] = matriz[piboteY][i] * (1 / pibote);
+        }
+
+        System.out.println("CON PIBOTE");
+        mostrarMatriz(matrizTrabajo);
+        System.out.println("######");
+        
+        //dejando en 0 la columna
+        for (int i = 0; i < matriz.length; i++) {
+            Double multiplicado = matriz[i][piboteX] * -1;
+            //System.out.println("Multiplicado: " +  multiplicado);
+            for (int j = 0; j < matriz[i].length; j++) {
+                if(i != piboteY){
+                    matrizTrabajo[i][j] = (multiplicado*matrizTrabajo[piboteY][j]) + matriz[i][j];
+                    System.out.println(multiplicado + " * " + matrizTrabajo[piboteY][j] + " + " + matriz[i][j] + " = " + matrizTrabajo[i][j]);
+                }
+            }
+            mostrarMatriz(matrizTrabajo);
+            System.out.println("######");
+        }
+
+        mostrarMatriz(matrizTrabajo);
+        System.out.println("######");
+        
+        //Se cambia el X
+        rvz[piboteY][1] = labelMatriz[piboteX + 3].getText();
+
+        for (int i = 0; i < matriz.length; i++) {
+            for (int j = 0; j < matriz[i].length; j++) {
+                matriz[i][j] = matrizTrabajo[i][j];
+            }
+        }
+
+        //mostrarMatriz(matrizTrabajo);
+        //System.out.println("###########");
+
+        if (pasoAPaso) {
+            pintarPibote(piboteX, piboteY);
+            JOptionPane.showMessageDialog(this, "El valor del pibote es: " + pibote + ", el cual se encuentra en la columna: " + labelMatriz[piboteX + 3].getText(), "Nuevo pibote encontrado", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        //agregarMatrizPDF();
+
+        //revisar si está concluso
+        if (n.isMax()) {
+            for (int i = 0; i < matriz[0].length - 1; i++) {
+                if (matriz[0][i] != 0) {
+                    if (matriz[0][i] > 0) {
+                        fin = true;
+                    } else {
+                        fin = false;
+                        break;
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < matriz[0].length - 1; i++) {
+                if (matriz[0][i] != 0) {
+                    if (matriz[0][i] < 0) {
+                        fin = true;
+                    } else {
+                        fin = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+        vueltas++;
+        if (vueltas >= 100) {
+            fin = true;
+        }
+
+        return fin;
+    }
+
+    public static void agregarMatrizPDF() {
+        PdfPTable table = new PdfPTable(matriz[0].length + 3);
+
+        FileOutputStream archivo = null;
+        try {
+            archivo = new FileOutputStream("tmp.pdf");
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        Document documento = new Document();
+        try {
+            PdfWriter.getInstance(documento, archivo);
+        } catch (DocumentException ex) {
+            Logger.getLogger(principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        documento.open();
+        try {
+            documento.add(new Paragraph("Gran M\n"));
+        } catch (DocumentException ex) {
+            Logger.getLogger(principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        for (int i = 0; i < labelMatriz.length; i++) {
+            table.addCell(labelMatriz[i].getText());
+        }
+
+        for (int i = 0; i < (matriz.length); i++) {
+            for (int k = 0; k < (matriz[0].length + 3); k++) {
+                if (k < 3) {
+                    table.addCell(rvz[i][k].toString());
+
+                } else {
+                    table.addCell(matriz[i][k - 3].toString());
+                }
+            }
+        }
+
+        try {
+            if (documento.isOpen()) {
+                documento.add(table);
+            }
+        } catch (DocumentException ex) {
+            Logger.getLogger(principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        documento.close();
+    }
+
+    public static void pintarPibote(int x, int y) {
+        txtMatriz[y][x].setText("<html><strong>" + txtMatriz[y][x].getText() + "</strong></html>");
+        txtMatriz[y][x].setForeground(Color.red);
+        txtMatriz[y][x].setBackground(Color.yellow);
+    }
+
+    public static int buscaNegativo() {
+        int enviar = 0;
+        Double menor = matriz[0][0];
+
+        for (int i = 0; i < matriz[0].length - 1; i++) {
+            if (matriz[0][i] < menor) {
+                menor = matriz[0][i];
+                enviar = i;
+            }
+        }
+
+        return enviar;
+    }
+
+    public static int buscaPositivo() {
+        int enviar = 0;
+        Double mayor = matriz[0][0];
+
+        for (int i = 0; i < matriz[0].length - 1; i++) {
+            if (matriz[0][i] > mayor) {
+                mayor = matriz[0][i];
+                enviar = i;
+            }
+        }
+
+        return enviar;
+    }
+
+    private void btnSiguienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSiguienteActionPerformed
+        pasoAPaso = true;
+        if (!ciclo()) {
+            new Thread(new hilo()).start();
+        } else {
+            if (vueltas >= 100) {
+                btnFinalizar.setEnabled(false);
+                btnSiguiente.setEnabled(false);
+                JOptionPane.showMessageDialog(this, "No existe una solución para este ejercicio", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                new Thread(new hilo()).start();
+                String salida = "La solución óptima es:\nZ = " + matriz[0][matriz[0].length - 1];
+                btnFinalizar.setEnabled(false);
+                btnSiguiente.setEnabled(false);
+                for (int i = 0; i < rvz.length; i++) {
+                    if (rvz[i][1].toString().contains("X")) {
+                        salida = salida + "\n" + rvz[i][1].toString() + " = " + matriz[i][matriz[i].length - 1];
+                    }
+                }
+                JOptionPane.showMessageDialog(this, salida, "Solución encontrada", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_btnSiguienteActionPerformed
+
+    private void btnFinalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinalizarActionPerformed
+        pasoAPaso = false;
+        while (!ciclo()) {
+            if (vueltas >= 100) {
+                break;
+            }
+        }
+
+        if (vueltas >= 100) {
+            btnFinalizar.setEnabled(false);
+            btnSiguiente.setEnabled(false);
+            JOptionPane.showMessageDialog(this, "No existe una solución para este ejercicio", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            new Thread(new hilo()).start();
+            String salida = "La solución óptima es:\nZ = " + matriz[0][matriz[0].length - 1];
+            btnFinalizar.setEnabled(false);
+            btnSiguiente.setEnabled(false);
+            for (int i = 0; i < rvz.length; i++) {
+                if (rvz[i][1].toString().contains("X")) {
+                    salida = salida + "\n" + rvz[i][1].toString() + " = " + matriz[i][matriz[i].length - 1];
+                }
+            }
+            JOptionPane.showMessageDialog(this, salida, "Solución encontrada", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+    }//GEN-LAST:event_btnFinalizarActionPerformed
+
+    private void toPngActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toPngActionPerformed
+        BufferedImage image = null;
+        JFileChooser fc;
+        File selectedFile = null;
+
+        fc = new JFileChooser();
+
+        fc.setDialogTitle("Exportar a PNG");
+        if (fc.showSaveDialog(this) == fc.APPROVE_OPTION) {
+            selectedFile = fc.getSelectedFile();
+        }
+        BufferedImage bi = new BufferedImage(panelMatris.getSize().width, panelMatris.getSize().height, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = bi.createGraphics();
+        panelMatris.paint(g);
+        g.dispose();
+
+        try {
+            ImageIO.write(bi, "png", selectedFile);
+        } catch (IOException ex) {
+            Logger.getLogger(principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+
+        JOptionPane.showMessageDialog(this, selectedFile.toString() + " a sido gurdado exitosamente.", "Exportar a PNG", JOptionPane.INFORMATION_MESSAGE);
+
+        /*
+         * SCREENSHOT
+         * 
+         * try {
+         Thread.sleep(500);
+         } catch (InterruptedException ex) {
+         Logger.getLogger(principal.class.getName()).log(Level.SEVERE, null, ex);
+         }
+        
+         try {
+         image = new Robot().createScreenCapture(new Rectangle(panelMatris.getLocationOnScreen().x, panelMatris.getLocationOnScreen().y, panelMatris.getWidth(), panelMatris.getHeight()));
+         } catch (AWTException ex) {
+         Logger.getLogger(principal.class.getName()).log(Level.SEVERE, null, ex);
+         }
+         try {
+         ImageIO.write(image, "png", selectedFile);
+         } catch (IOException ex) {
+         Logger.getLogger(principal.class.getName()).log(Level.SEVERE, null, ex);
+         }*/
+    }//GEN-LAST:event_toPngActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        System.exit(EXIT_ON_CLOSE);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void btnPDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPDFActionPerformed
+        JFileChooser fc;
+        File selectedFile = null;
+
+        fc = new JFileChooser();
+
+        fc.setDialogTitle("Exportar a PDF");
+        if (fc.showSaveDialog(this) == fc.APPROVE_OPTION) {
+            selectedFile = fc.getSelectedFile();
+        }
+
+        documento.close();
+    }//GEN-LAST:event_btnPDFActionPerformed
 
     public void igualarRestricciones() {
         for (int i = 0; i < operadores.length; i++) {
@@ -271,29 +692,25 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
             }
         }
 
-        /*
-         *TODO: Despejar Z dependiendo si es min o max 
-         */
-
     }
 
     public void restriccionesPorM() {
-        String nuevo;
+        //String nuevo;
         int aux;
 
         Iterator iter = As.iterator();
         while (iter.hasNext()) {
-            nuevo = "";
+            //nuevo = "";
             aux = Integer.valueOf(iter.next().toString()) - 1;
 
-            for (int i = 0; i < restriccionesString[aux].length(); i++) {
-                if (restriccionesString[aux].charAt(i) == 'x' || restriccionesString[aux].charAt(i) == 'A'
-                        || restriccionesString[aux].charAt(i) == 'e') {
-                    nuevo = nuevo + "M" + restriccionesString[aux].charAt(i);
-                } else {
-                    nuevo = nuevo + restriccionesString[aux].charAt(i);
-                }
-            }
+            /*for (int i = 0; i < restriccionesString[aux].length(); i++) {
+             if (restriccionesString[aux].charAt(i) == 'x' || restriccionesString[aux].charAt(i) == 'A'
+             || restriccionesString[aux].charAt(i) == 'e') {
+             nuevo = nuevo + "M" + restriccionesString[aux].charAt(i);
+             } else {
+             nuevo = nuevo + restriccionesString[aux].charAt(i);
+             }
+             }*/
             //Multiplica restricion por M
             Double[] o = restriccionesDouble.get(aux);
             for (int i = 0; i < o.length; i++) {
@@ -301,11 +718,8 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
             }
 
             restriccionesDouble.set(aux, o);
-            //Multiplica ld por M
             ldDoubleM[aux] = ldDoubleM[aux] * M;
 
-            restriccionesString[aux] = nuevo;
-            ldString[aux] = ldString[aux] + "M";
         }
     }
 
@@ -314,8 +728,11 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
         Double nuevoLd = 0.0;
         Double sumA = 0.0;
 
-        //Valor de Z, cambiar después
         nuevoFO[0] = 1.0;
+
+        for (int i = 0; i < FODouble.length; i++) {
+            FODouble[i] = FODouble[i] * -1;
+        }
 
         for (int i = 0; i < FODouble.length; i++) {
             Iterator iter = As.iterator();
@@ -336,8 +753,8 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
         //se agrega Z a la matriz LD
         matriz = new Double[restriccionesString.length + 1][getNumColumnas() - 3];
 
-        for (int i = 0; i < (restriccionesString.length + 1); i++) {
-            for (int j = 0; j < (getNumColumnas() - 3); j++) {
+        for (int i = 0; i < matriz.length; i++) {
+            for (int j = 0; j < matriz[i].length; j++) {
                 matriz[i][j] = 0.0;
             }
         }
@@ -346,7 +763,7 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
             matriz[0][i] = nuevoFO[i + 1];
         }
 
-        matriz[0][getNumColumnas() - 4] = nuevoLd;
+        matriz[0][matriz[0].length - 1] = nuevoLd;
 
         //dejamos las restriciones sin M
         Iterator iter = As.iterator();
@@ -362,8 +779,16 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     }
 
     public void cargarMatriz() {
+        rvz = new String[restriccionesString.length + 1][3];
         int contR = 1;
+        int contA = 1;
         int iaux = 0;
+
+        for (int i = 0; i < rvz.length; i++) {
+            for (int k = 0; k < rvz[i].length; k++) {
+                rvz[i][k] = "";
+            }
+        }
 
         //carga Xi y ld
         for (Double[] r : restriccionesDouble) {
@@ -372,24 +797,58 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
                 iaux = i;
             }
             //ld
-            matriz[contR][getNumColumnas() - 4] = ldDouble[contR - 1];
+            matriz[contR][matriz[0].length - 1] = ldDouble[contR - 1];
             contR++;
         }
 
         //carga Ai
-        Iterator iter = As.iterator();
+        Iterator iter = Ss.iterator();
         while (iter.hasNext()) {
             int a = Integer.parseInt(iter.next().toString());
             matriz[a][iaux + a] = 1.0;
+            //rvz[contA][1] = "S" + a;
+            //contA++;
         }
 
-        mostrarMatriz();
+        iter = es.iterator();
+        while (iter.hasNext()) {
+            int a = Integer.parseInt(iter.next().toString());
+            matriz[a][iaux + a] = -1.0;
+            matriz[0][iaux + a] = -M;
+            //rvz[contA][1] = "e" + a;
+            //contA++;
+        }
+
+        iter = As.iterator();
+        while (iter.hasNext()) {
+            int a = Integer.parseInt(iter.next().toString());
+            matriz[a][iaux + a] = 1.0;
+            rvz[contA][1] = "A" + a;
+            contA++;
+        }
+
+        //carga matriz rvz
+        rvz[0][1] = "Z";
+        for (int i = 0; i < rvz.length; i++) {
+            rvz[i][0] = String.valueOf(i);
+            if (i == 0) {
+                if (n.isMax()) {
+                    rvz[i][2] = String.valueOf(-1);
+                } else {
+                    rvz[i][2] = String.valueOf(1);
+                }
+            } else {
+                rvz[i][2] = String.valueOf(0);
+            }
+
+        }
+
     }
 
-    public static void mostrarMatriz() {
-        for (int i = 0; i < restriccionesString.length + 1; i++) {
-            for (int j = 0; j < getNumColumnas() - 3; j++) {
-                System.out.print(matriz[i][j] + " | ");
+    public static void mostrarMatriz(Double[][] m) {
+        for (int i = 0; i < m.length; i++) {
+            for (int j = 0; j < m[i].length; j++) {
+                System.out.print(m[i][j] + " | ");
             }
             System.out.println("");
         }
@@ -409,72 +868,88 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
             pbProgreso.setValue(0);
             pbProgreso.setStringPainted(true);
 
-            JLabel[] label = new JLabel[numCols];
+            labelMatriz = new JLabel[numCols];
 
             for (int i = 0; i < numCols; i++) {
-                label[i] = new JLabel("");
-                label[i].setFont(new Font("", Font.BOLD, 14));
+                labelMatriz[i] = new JLabel("");
+                labelMatriz[i].setFont(new Font("", Font.BOLD, 14));
+                labelMatriz[i].setHorizontalAlignment(SwingConstants.CENTER);
             }
             pbProgreso.setValue(pbProgreso.getValue() + 10);
             panelMatris.setLayout(new GridLayout(numFilas, numCols));
+            panelMatris.removeAll();
 
-            label[0].setText("R");
+            labelMatriz[0].setText("R");
             contLabel++;
-            panelMatris.add(label[0]);
-            label[1].setText("V");
+            panelMatris.add(labelMatriz[0]);
+            labelMatriz[1].setText("V");
             contLabel++;
-            panelMatris.add(label[1]);
-            label[2].setText("Z");
+            panelMatris.add(labelMatriz[1]);
+            labelMatriz[2].setText("Z");
             contLabel++;
-            panelMatris.add(label[2]);
+            panelMatris.add(labelMatriz[2]);
             pbProgreso.setValue(pbProgreso.getValue() + 10);
             pbProgreso.repaint();
             for (int i = 0; i < numVar; i++) {
-                label[i + 3].setText("X" + (i + 1));
-                panelMatris.add(label[i + 3]);
+                labelMatriz[i + 3].setText("X" + (i + 1));
+                panelMatris.add(labelMatriz[i + 3]);
                 contLabel++;
             }
             pbProgreso.setValue(pbProgreso.getValue() + 10);
 
-            Iterator iter = As.iterator();
+            Iterator iter = Ss.iterator();
             while (iter.hasNext()) {
-                label[contLabel].setText("A" + iter.next());
-                panelMatris.add(label[contLabel]);
+                labelMatriz[contLabel].setText("S" + iter.next());
+                panelMatris.add(labelMatriz[contLabel]);
                 contLabel++;
             }
             pbProgreso.setValue(pbProgreso.getValue() + 10);
 
             iter = es.iterator();
             while (iter.hasNext()) {
-                label[contLabel].setText("e" + iter.next());
-                panelMatris.add(label[contLabel]);
+                labelMatriz[contLabel].setText("e" + iter.next());
+                panelMatris.add(labelMatriz[contLabel]);
                 contLabel++;
             }
             pbProgreso.setValue(pbProgreso.getValue() + 10);
 
-            iter = Ss.iterator();
+            iter = As.iterator();
             while (iter.hasNext()) {
-                label[contLabel].setText("S" + iter.next());
-                panelMatris.add(label[contLabel]);
+                String a = iter.next().toString();
+                labelMatriz[contLabel].setText("A" + a);
+                panelMatris.add(labelMatriz[contLabel]);
                 contLabel++;
             }
             pbProgreso.setValue(pbProgreso.getValue() + 10);
 
-            label[contLabel].setText("LD");
-            panelMatris.add(label[contLabel]);
+            labelMatriz[contLabel].setText("LD");
+            panelMatris.add(labelMatriz[contLabel]);
 
+            pbProgreso.setValue(pbProgreso.getValue() + 20);
+
+            txtMatriz = new JTextPane[matriz.length][matriz[0].length];
+            txtRvz = new JTextPane[rvz.length][rvz[0].length];
 
             for (int i = 0; i < (numFilas - 1); i++) {
-                for (int k = 3; k < numCols; k++) {
-                    panelMatris.add(new JTextArea(String.valueOf(matriz[i][k-3])));
+                for (int k = 0; k < numCols; k++) {
+                    if (k < 3) {
+                        txtRvz[i][k] = new JTextPane();
+                        txtRvz[i][k].setContentType("text/html");
+                        txtRvz[i][k].setText("<p style=vertical-align:\\\"bottom\\\"><center>" + String.valueOf(rvz[i][k]) + "</center></p>");
+                        txtRvz[i][k].setEditable(false);
+                        panelMatris.add(txtRvz[i][k]);
+                    } else {
+                        txtMatriz[i][k - 3] = new JTextPane();
+                        txtMatriz[i][k - 3].setContentType("text/html");
+                        txtMatriz[i][k - 3].setText("<p style=vertical-align:\\\"bottom\\\"><center>" + String.valueOf(matriz[i][k - 3]) + "</center></p>");
+                        txtMatriz[i][k - 3].setEditable(false);
+                        panelMatris.add(txtMatriz[i][k - 3]);
+                    }
                 }
             }
-            pbProgreso.setValue(pbProgreso.getValue() + 10);
+            pbProgreso.setValue(pbProgreso.getValue() + 20);
 
             panelMatris.updateUI();
-
-            //System.out.println("numCols: " + numCols);
-            //System.out.println("numFilas: " + numFilas);
         }
     }
 
@@ -548,15 +1023,20 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnFinalizar;
+    private javax.swing.JButton btnPDF;
     private javax.swing.JButton btnSiguiente;
     private javax.swing.JButton jButton1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     public static javax.swing.JPanel panelMatris;
     public static javax.swing.JProgressBar pbProgreso;
+    private javax.swing.JButton toPng;
     // End of variables declaration//GEN-END:variables
 }
